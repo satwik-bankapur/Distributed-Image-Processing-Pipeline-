@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Distributed Image Processing</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+        .upload-section {
+            margin: 20px 0;
+        }
+        input[type="file"] {
+            margin: 10px 0;
+        }
+        select, button {
+            padding: 10px 20px;
+            margin: 10px 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        .status {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-radius: 5px;
+        }
+        .progress-bar {
+            width: 100%;
+            height: 30px;
+            background-color: #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        .progress-fill {
+            height: 100%;
+            background-color: #28a745;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .workers {
+            margin-top: 20px;
+        }
+        .worker-item {
+            padding: 10px;
+            margin: 5px 0;
+            background-color: #d4edda;
+            border-radius: 5px;
+        }
+        img {
+            max-width: 100%;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🖼 Distributed Image Processing Pipeline</h1>
+        
+        <div class="upload-section">
+            <h3>Upload Image</h3>
+            <input type="file" id="imageFile" accept="image/*">
+            <br>
+            <label>Transformation:</label>
+            <select id="transformation">
+                <option value="grayscale">Grayscale</option>
+                <option value="blur">Blur</option>
+                <option value="edge">Edge Detection</option>
+            </select>
+            <br>
+            <button onclick="uploadImage()">Process Image</button>
+        </div>
+        
+        <div class="status" id="statusSection" style="display:none;">
+            <h3>Processing Status</h3>
+            <p>Job ID: <span id="jobId"></span></p>
+            <p>Status: <span id="status"></span></p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressBar"></div>
+            </div>
+            <p><span id="progressText">0/0 tiles processed (0%)</span></p>
+            <button onclick="downloadResult()">Download Result</button>
+        </div>
+        
+        <div class="workers">
+            <h3>Active Workers</h3>
+            <button onclick="refreshWorkers()">Refresh Workers</button>
+            <div id="workerList"></div>
+        </div>
+        
+        <div id="resultSection"></div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:5000';
+        let currentJobId = null;
+        let statusInterval = null;
+
+        async function uploadImage() {
+            const fileInput = document.getElementById('imageFile');
+            const transformation = document.getElementById('transformation').value;
+            
+            if (!fileInput.files[0]) {
+                alert('Please select an image file');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', fileInput.files[0]);
+            formData.append('transformation', transformation);
+
+            try {
+                const response = await fetch(${API_URL}/upload, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    currentJobId = data.job_id;
+                    document.getElementById('jobId').textContent = currentJobId;
+                    document.getElementById('statusSection').style.display = 'block';
+                    
+                    // Start polling for status
+                    if (statusInterval) clearInterval(statusInterval);
+                    statusInterval = setInterval(checkStatus, 2000);
+                } else {
+                    alert('Error: ' + data.error);
+                }
+            } catch (error) {
+                alert('Error uploading image: ' + error);
+            }
+        }
+
+        async function checkStatus() {
+            if (!currentJobId) return;
+
+            try {
+                const response = await fetch(${API_URL}/status/${currentJobId});
+                const data = await response.json();
+
+                document.getElementById('status').textContent = data.status;
+                document.getElementById('progressBar').style.width = data.progress + '%';
+                document.getElementById('progressText').textContent = 
+                    ${data.received_tiles}/${data.total_tiles} tiles processed (${data.progress.toFixed(1)}%);
+
+                if (data.status === 'completed') {
+                    clearInterval(statusInterval);
+                    alert('Processing completed! You can now download the result.');
+                }
+            } catch (error) {
+                console.error('Error checking status:', error);
+            }
+        }
+
+        async function downloadResult() {
+            if (!currentJobId) return;
+
+            window.open(${API_URL}/result/${currentJobId}, '_blank');
+        }
+
+        async function refreshWorkers() {
+            try {
+                const response = await fetch(${API_URL}/workers);
+                const data = await response.json();
+
+                const workerList = document.getElementById('workerList');
+                workerList.innerHTML = '';
+
+                if (data.active_workers === 0) {
+                    workerList.innerHTML = '<p>No active workers</p>';
+                } else {
+                    data.workers.forEach(worker => {
+                        const div = document.createElement('div');
+                        div.className = 'worker-item';
+                        div.textContent = ${worker.worker_id} - Processed: ${worker.processed_count} - Last seen: ${worker.last_seen.toFixed(1)}s ago;
+                        workerList.appendChild(div);
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching workers:', error);
+            }
+        }
+
+        // Refresh workers on load
+        refreshWorkers();
+        setInterval(refreshWorkers, 5000);
+    </script>
+</body>
+</html>

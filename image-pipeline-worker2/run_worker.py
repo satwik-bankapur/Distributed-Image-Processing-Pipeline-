@@ -1,0 +1,6 @@
+# run_worker.py
+
+from worker.worker_main import main
+
+if __name__ == "__main__":
+    main()

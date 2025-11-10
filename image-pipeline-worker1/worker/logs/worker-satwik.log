@@ -1,0 +1,284 @@
+[2025-11-09 13:59:18,851] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 13:59:18,852] [worker-satwik] Starting worker loop...
+[2025-11-09 13:59:18,852] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 13:59:18,852] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 13:59:25,860] [worker-satwik] 
+Shutdown signal received
+[2025-11-09 13:59:25,861] [worker-satwik] 
+Shutting down worker...
+[2025-11-09 14:05:44,598] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 14:05:44,598] [worker-satwik] Starting worker loop...
+[2025-11-09 14:05:44,598] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 14:05:44,598] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 14:08:02,280] [worker-satwik] 
+Shutdown signal received
+[2025-11-09 14:08:02,280] [worker-satwik] 
+Shutting down worker...
+[2025-11-09 14:08:02,823] [worker-satwik] 
+=== Final Statistics ===
+[2025-11-09 14:08:02,823] [worker-satwik] Tasks consumed: 0
+[2025-11-09 14:08:02,823] [worker-satwik] Tiles processed: 0
+[2025-11-09 14:08:02,823] [worker-satwik] Worker shutdown complete
+
+[2025-11-09 14:08:09,074] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 14:08:09,074] [worker-satwik] Starting worker loop...
+[2025-11-09 14:08:09,075] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 14:08:09,075] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 14:08:28,096] [worker-satwik] 
+Shutdown signal received
+[2025-11-09 14:08:28,096] [worker-satwik] 
+Shutting down worker...
+[2025-11-09 14:08:30,528] [worker-satwik] 
+=== Final Statistics ===
+[2025-11-09 14:08:30,528] [worker-satwik] Tasks consumed: 0
+[2025-11-09 14:08:30,529] [worker-satwik] Tiles processed: 0
+[2025-11-09 14:08:30,529] [worker-satwik] Worker shutdown complete
+
+[2025-11-09 14:08:39,506] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 14:08:39,506] [worker-satwik] Starting worker loop...
+[2025-11-09 14:08:39,506] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 14:08:39,506] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 14:10:19,672] [worker-satwik] 
+Shutdown signal received
+[2025-11-09 14:10:19,672] [worker-satwik] 
+Shutting down worker...
+[2025-11-09 14:10:20,855] [worker-satwik] 
+=== Final Statistics ===
+[2025-11-09 14:10:20,855] [worker-satwik] Tasks consumed: 0
+[2025-11-09 14:10:20,855] [worker-satwik] Tiles processed: 0
+[2025-11-09 14:10:20,855] [worker-satwik] Worker shutdown complete
+
+[2025-11-09 14:20:50,452] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 14:20:50,453] [worker-satwik] Starting worker loop...
+[2025-11-09 14:20:50,453] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 14:20:50,453] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 14:24:08,270] [worker-satwik] 
+Shutdown signal received
+[2025-11-09 14:24:08,270] [worker-satwik] 
+Shutting down worker...
+[2025-11-09 14:24:57,210] [worker-satwik] 
+=== Final Statistics ===
+[2025-11-09 14:24:57,210] [worker-satwik] Tasks consumed: 0
+[2025-11-09 14:24:57,210] [worker-satwik] Tiles processed: 0
+[2025-11-09 14:24:57,211] [worker-satwik] Worker shutdown complete
+
+[2025-11-09 14:25:09,890] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 14:25:09,890] [worker-satwik] Starting worker loop...
+[2025-11-09 14:25:09,890] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 14:25:09,890] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 14:27:38,157] [worker-satwik] 
+Shutdown signal received
+[2025-11-09 14:27:38,158] [worker-satwik] 
+Shutting down worker...
+[2025-11-09 14:27:38,508] [worker-satwik] 
+=== Final Statistics ===
+[2025-11-09 14:27:38,508] [worker-satwik] Tasks consumed: 0
+[2025-11-09 14:27:38,508] [worker-satwik] Tiles processed: 0
+[2025-11-09 14:27:38,509] [worker-satwik] Worker shutdown complete
+
+[2025-11-09 14:27:40,694] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 14:27:40,695] [worker-satwik] Starting worker loop...
+[2025-11-09 14:27:40,695] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 14:27:40,695] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 14:28:50,796] [worker-satwik] 
+Shutdown signal received
+[2025-11-09 14:28:50,796] [worker-satwik] 
+Shutting down worker...
+[2025-11-09 14:28:52,656] [worker-satwik] 
+=== Final Statistics ===
+[2025-11-09 14:28:52,657] [worker-satwik] Tasks consumed: 0
+[2025-11-09 14:28:52,657] [worker-satwik] Tiles processed: 0
+[2025-11-09 14:28:52,657] [worker-satwik] Worker shutdown complete
+
+[2025-11-09 14:28:53,963] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 14:28:53,963] [worker-satwik] Starting worker loop...
+[2025-11-09 14:28:53,963] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 14:28:53,963] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 14:32:04,236] [worker-satwik] 
+Shutdown signal received
+[2025-11-09 14:32:04,236] [worker-satwik] 
+Shutting down worker...
+[2025-11-09 14:32:04,584] [worker-satwik] 
+=== Final Statistics ===
+[2025-11-09 14:32:04,584] [worker-satwik] Tasks consumed: 0
+[2025-11-09 14:32:04,585] [worker-satwik] Tiles processed: 0
+[2025-11-09 14:32:04,585] [worker-satwik] Worker shutdown complete
+
+[2025-11-09 14:52:52,920] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 14:52:52,920] [worker-satwik] Starting worker loop...
+[2025-11-09 14:52:52,920] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 14:52:52,920] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 15:01:24,634] [worker-satwik] 
+Shutdown signal received
+[2025-11-09 15:01:24,634] [worker-satwik] 
+Shutting down worker...
+[2025-11-09 15:01:25,328] [worker-satwik] 
+=== Final Statistics ===
+[2025-11-09 15:01:25,328] [worker-satwik] Tasks consumed: 0
+[2025-11-09 15:01:25,328] [worker-satwik] Tiles processed: 0
+[2025-11-09 15:01:25,329] [worker-satwik] Worker shutdown complete
+
+[2025-11-09 15:05:20,786] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 15:05:20,787] [worker-satwik] Starting worker loop...
+[2025-11-09 15:05:20,787] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 15:05:20,787] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 15:07:48,840] [worker-satwik] 
+Shutdown signal received
+[2025-11-09 15:07:48,840] [worker-satwik] 
+Shutting down worker...
+[2025-11-09 15:07:53,396] [worker-satwik] 
+=== Final Statistics ===
+[2025-11-09 15:07:53,397] [worker-satwik] Tasks consumed: 0
+[2025-11-09 15:07:53,397] [worker-satwik] Tiles processed: 0
+[2025-11-09 15:07:53,397] [worker-satwik] Worker shutdown complete
+
+[2025-11-09 15:55:31,048] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 15:55:31,049] [worker-satwik] Starting worker loop...
+[2025-11-09 15:55:31,049] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 15:55:31,049] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 15:55:47,054] [worker-satwik] 
+Shutdown signal received
+[2025-11-09 15:55:47,054] [worker-satwik] 
+Shutting down worker...
+[2025-11-09 15:55:47,849] [worker-satwik] 
+=== Final Statistics ===
+[2025-11-09 15:55:47,849] [worker-satwik] Tasks consumed: 0
+[2025-11-09 15:55:47,849] [worker-satwik] Tiles processed: 0
+[2025-11-09 15:55:47,849] [worker-satwik] Worker shutdown complete
+
+[2025-11-09 17:58:55,528] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 17:58:55,528] [worker-satwik] Starting worker loop...
+[2025-11-09 17:58:55,528] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 17:58:55,528] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 18:02:07,601] [worker-satwik] 
+Shutdown signal received
+[2025-11-09 18:02:07,602] [worker-satwik] 
+Shutting down worker...
+[2025-11-09 18:05:41,482] [worker-satwik] 
+=== Final Statistics ===
+[2025-11-09 18:05:41,482] [worker-satwik] Tasks consumed: 0
+[2025-11-09 18:05:41,482] [worker-satwik] Tiles processed: 0
+[2025-11-09 18:05:41,483] [worker-satwik] Worker shutdown complete
+
+[2025-11-09 18:05:46,251] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 18:05:46,251] [worker-satwik] Starting worker loop...
+[2025-11-09 18:05:46,251] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 18:05:46,251] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 18:08:08,796] [worker-satwik] 
+Shutdown signal received
+[2025-11-09 18:08:08,797] [worker-satwik] 
+Shutting down worker...
+[2025-11-09 18:08:10,131] [worker-satwik] 
+=== Final Statistics ===
+[2025-11-09 18:08:10,131] [worker-satwik] Tasks consumed: 0
+[2025-11-09 18:08:10,131] [worker-satwik] Tiles processed: 0
+[2025-11-09 18:08:10,131] [worker-satwik] Worker shutdown complete
+
+[2025-11-09 18:08:36,041] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 18:08:36,041] [worker-satwik] Starting worker loop...
+[2025-11-09 18:08:36,041] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 18:08:36,041] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 18:13:38,135] [worker-satwik] 
+Shutdown signal received
+[2025-11-09 18:13:38,136] [worker-satwik] 
+Shutting down worker...
+[2025-11-09 18:13:38,472] [worker-satwik] 
+=== Final Statistics ===
+[2025-11-09 18:13:38,472] [worker-satwik] Tasks consumed: 0
+[2025-11-09 18:13:38,472] [worker-satwik] Tiles processed: 0
+[2025-11-09 18:13:38,472] [worker-satwik] Worker shutdown complete
+
+[2025-11-09 18:15:20,251] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 18:15:20,251] [worker-satwik] Starting worker loop...
+[2025-11-09 18:15:20,252] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 18:15:20,252] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 18:28:59,488] [worker-satwik] 
+Shutdown signal received
+[2025-11-09 18:28:59,488] [worker-satwik] 
+Shutting down worker...
+[2025-11-09 18:28:59,921] [worker-satwik] 
+=== Final Statistics ===
+[2025-11-09 18:28:59,921] [worker-satwik] Tasks consumed: 0
+[2025-11-09 18:28:59,921] [worker-satwik] Tiles processed: 0
+[2025-11-09 18:28:59,921] [worker-satwik] Worker shutdown complete
+
+[2025-11-09 18:29:40,550] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 18:29:40,550] [worker-satwik] Starting worker loop...
+[2025-11-09 18:29:40,550] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 18:29:40,550] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 18:32:41,607] [worker-satwik] 
+Shutdown signal received
+[2025-11-09 18:32:41,607] [worker-satwik] 
+Shutting down worker...
+[2025-11-09 18:32:41,609] [worker-satwik] 
+=== Final Statistics ===
+[2025-11-09 18:32:41,609] [worker-satwik] Tasks consumed: 0
+[2025-11-09 18:32:41,609] [worker-satwik] Tiles processed: 0
+[2025-11-09 18:32:41,609] [worker-satwik] Worker shutdown complete
+
+[2025-11-09 18:37:25,928] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 18:37:25,928] [worker-satwik] Starting worker loop...
+[2025-11-09 18:37:25,928] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 18:37:25,928] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 18:38:31,448] [worker-satwik] 
+Shutdown signal received
+[2025-11-09 18:38:31,449] [worker-satwik] 
+Shutting down worker...
+[2025-11-09 18:38:31,775] [worker-satwik] 
+=== Final Statistics ===
+[2025-11-09 18:38:31,775] [worker-satwik] Tasks consumed: 0
+[2025-11-09 18:38:31,775] [worker-satwik] Tiles processed: 0
+[2025-11-09 18:38:31,775] [worker-satwik] Worker shutdown complete
+
+[2025-11-09 19:50:49,935] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 19:50:49,936] [worker-satwik] Starting worker loop...
+[2025-11-09 19:50:49,936] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 19:50:49,936] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 19:55:19,040] [worker-satwik] 
+Shutdown signal received
+[2025-11-09 19:55:19,041] [worker-satwik] 
+Shutting down worker...
+[2025-11-09 19:55:19,874] [worker-satwik] 
+=== Final Statistics ===
+[2025-11-09 19:55:19,875] [worker-satwik] Tasks consumed: 0
+[2025-11-09 19:55:19,875] [worker-satwik] Tiles processed: 0
+[2025-11-09 19:55:19,875] [worker-satwik] Worker shutdown complete
+
+[2025-11-09 21:29:36,888] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 21:29:36,888] [worker-satwik] Starting worker loop...
+[2025-11-09 21:29:36,888] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 21:29:36,888] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 21:36:24,651] [worker-satwik] Worker initialized: worker-satwik
+[2025-11-09 21:36:24,652] [worker-satwik] Starting worker loop...
+[2025-11-09 21:36:24,652] [worker-satwik] Worker ID: worker-satwik
+[2025-11-09 21:36:24,652] [worker-satwik] Waiting for tasks from Kafka...
+
+[2025-11-09 21:50:36,892] [worker-satwik] 
+Shutdown signal received
+[2025-11-09 21:50:36,892] [worker-satwik] 
+Shutting down worker...
+[2025-11-09 21:50:37,501] [worker-satwik] 
+=== Final Statistics ===
+[2025-11-09 21:50:37,501] [worker-satwik] Tasks consumed: 0
+[2025-11-09 21:50:37,501] [worker-satwik] Tiles processed: 0
+[2025-11-09 21:50:37,501] [worker-satwik] Worker shutdown complete
+

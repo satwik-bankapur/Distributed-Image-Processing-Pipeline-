@@ -1,0 +1,397 @@
+<!-- app/static/index.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Processing Pipeline</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+        
+        .card h2 {
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        input[type="file"],
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+        }
+        
+        input[type="file"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #764ba2;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .status {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .status.show {
+            display: block;
+        }
+        
+        .status-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .status-item:last-child {
+            border-bottom: none;
+        }
+        
+        .status-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .status-value {
+            color: #666;
+            margin-left: 10px;
+        }
+        
+        .preview {
+            width: 100%;
+            margin-top: 20px;
+            border-radius: 5px;
+            display: none;
+            max-height: 300px;
+            object-fit: contain;
+        }
+        
+        .preview.show {
+            display: block;
+        }
+        
+        .workers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .worker-card {
+            background: #f9f9f9;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .worker-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .worker-info {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .worker-status {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #4caf50;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🖼️ Image Processing Pipeline</h1>
+            <p>Upload, process, and download images using distributed Kafka workers</p>
+        </div>
+        
+        <div class="content">
+            <!-- Upload Card -->
+            <div class="card">
+                <h2>Upload Image</h2>
+                
+                <div class="form-group">
+                    <label for="image-file">Select Image (min 1024x1024):</label>
+                    <input type="file" id="image-file" accept="image/*">
+                </div>
+                
+                <div class="form-group">
+                    <label for="transformation">Transformation:</label>
+                    <select id="transformation">
+                        <option value="grayscale">Grayscale</option>
+                        <option value="blur">Blur</option>
+                        <option value="edge_detection">Edge Detection</option>
+                        <option value="sharpen">Sharpen</option>
+                    </select>
+                </div>
+                
+                <button onclick="uploadImage()">Upload & Process</button>
+                
+                <div class="status" id="upload-status">
+                    <div class="status-item">
+                        <span class="status-label">Job ID:</span>
+                        <span class="status-value" id="job-id">-</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Status:</span>
+                        <span class="status-value" id="job-status">Processing...</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Tiles:</span>
+                        <span class="status-value" id="tiles-count">-</span>
+                    </div>
+                </div>
+                
+                <img id="preview" class="preview" alt="Preview">
+            </div>
+            
+            <!-- Monitoring Card -->
+            <div class="card">
+                <h2>Active Workers</h2>
+                
+                <div id="workers-container" class="workers-grid">
+                    <p style="color: #999;">Fetching worker status...</p>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <h3 style="color: #333; margin-bottom: 10px;">System Status</h3>
+                    <div class="status show">
+                        <div class="status-item">
+                            <span class="status-label">Kafka Broker:</span>
+                            <span class="status-value" id="broker-status">Connected</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Master Node:</span>
+                            <span class="status-value" id="master-status">Healthy</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">Topics:</span>
+                            <span class="status-value">tasks, results, heartbeats</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Update active workers every 5 seconds
+        setInterval(updateWorkers, 5000);
+        updateWorkers(); // Initial fetch
+        
+        async function updateWorkers() {
+            try {
+                const response = await fetch('/api/workers');
+                const data = await response.json();
+                
+                const container = document.getElementById('workers-container');
+                
+                if (data.active_workers === 0) {
+                    container.innerHTML = '<p style="color: #999;">No active workers</p>';
+                    return;
+                }
+                
+                let html = '';
+                data.workers.forEach(worker => {
+                    html += `
+                        <div class="worker-card">
+                            <div class="worker-name">
+                                <span class="worker-status"></span>${worker.worker_id}
+                            </div>
+                            <div class="worker-info">
+                                Status: Active
+                            </div>
+                            <div class="worker-info">
+                                Last HB: ${worker.age_seconds}s ago
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+            } catch (e) {
+                console.error('Error fetching workers:', e);
+            }
+        }
+        
+        async function uploadImage() {
+            const fileInput = document.getElementById('image-file');
+            const transformation = document.getElementById('transformation').value;
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                alert('Please select an image');
+                return;
+            }
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            const button = event.target;
+            button.disabled = true;
+            button.textContent = 'Uploading...';
+            
+            try {
+                const response = await fetch(`/upload?transformation=${transformation}`, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.status === 'success') {
+                    document.getElementById('job-id').textContent = data.job_id;
+                    document.getElementById('tiles-count').textContent = data.tiles_count;
+                    document.getElementById('upload-status').classList.add('show');
+                    
+                    // Show preview
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        document.getElementById('preview').src = e.target.result;
+                        document.getElementById('preview').classList.add('show');
+                    };
+                    reader.readAsDataURL(file);
+                    
+                    // Poll for results
+                    pollForResult(data.job_id);
+                }
+            } catch (error) {
+                alert('Upload error: ' + error);
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Upload & Process';
+            }
+        }
+        
+        async function pollForResult(jobId) {
+            const maxAttempts = 60;
+            let attempts = 0;
+            
+            const interval = setInterval(async () => {
+                attempts++;
+                
+                try {
+                    const response = await fetch(`/status/${jobId}`);
+                    const data = await response.json();
+                    
+                    document.getElementById('job-status').textContent = data.status;
+                    
+                    if (data.status === 'completed') {
+                        clearInterval(interval);
+                        document.getElementById('job-status').textContent = '✅ Completed';
+                        
+                        // Add download link
+                        const resultResponse = await fetch(`/result/${jobId}`);
+                        const result = await resultResponse.json();
+                        
+                        alert('✅ Processing complete! Ready to download.');
+                    }
+                    
+                    if (attempts >= maxAttempts) {
+                        clearInterval(interval);
+                        document.getElementById('job-status').textContent = 'Timeout';
+                    }
+                } catch (error) {
+                    console.error('Poll error:', error);
+                }
+            }, 2000);
+        }
+    </script>
+</body>
+</html>
+

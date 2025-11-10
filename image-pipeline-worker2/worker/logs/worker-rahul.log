@@ -1,0 +1,119 @@
+[2025-11-08 23:59:45,672] [worker-rahul] Worker initialized: worker-rahul
+[2025-11-08 23:59:45,673] [worker-rahul] Starting worker loop...
+[2025-11-08 23:59:45,673] [worker-rahul] Worker ID: worker-rahul
+[2025-11-08 23:59:45,673] [worker-rahul] Waiting for tasks from Kafka...
+
+[2025-11-09 00:09:07,986] [worker-rahul] 
+Shutdown signal received
+[2025-11-09 00:09:07,986] [worker-rahul] 
+Shutting down worker...
+[2025-11-09 00:09:08,762] [worker-rahul] 
+=== Final Statistics ===
+[2025-11-09 00:09:08,762] [worker-rahul] Tasks consumed: 0
+[2025-11-09 00:09:08,762] [worker-rahul] Tiles processed: 0
+[2025-11-09 00:09:08,762] [worker-rahul] Worker shutdown complete
+
+[2025-11-09 00:09:14,286] [worker-rahul] Worker initialized: worker-rahul
+[2025-11-09 00:09:14,286] [worker-rahul] Starting worker loop...
+[2025-11-09 00:09:14,286] [worker-rahul] Worker ID: worker-rahul
+[2025-11-09 00:09:14,286] [worker-rahul] Waiting for tasks from Kafka...
+
+[2025-11-09 13:01:10,941] [worker-rahul] Worker initialized: worker-rahul
+[2025-11-09 13:01:10,943] [worker-rahul] Starting worker loop...
+[2025-11-09 13:01:10,943] [worker-rahul] Worker ID: worker-rahul
+[2025-11-09 13:01:10,943] [worker-rahul] Waiting for tasks from Kafka...
+
+[2025-11-09 13:06:54,183] [worker-rahul] 
+Shutdown signal received
+[2025-11-09 13:06:54,184] [worker-rahul] 
+Shutting down worker...
+[2025-11-09 13:06:54,237] [worker-rahul] 
+=== Final Statistics ===
+[2025-11-09 13:06:54,237] [worker-rahul] Tasks consumed: 0
+[2025-11-09 13:06:54,238] [worker-rahul] Tiles processed: 0
+[2025-11-09 13:06:54,238] [worker-rahul] Worker shutdown complete
+
+[2025-11-09 18:08:38,937] [worker-rahul] Worker initialized: worker-rahul
+[2025-11-09 18:08:38,939] [worker-rahul] Starting worker loop...
+[2025-11-09 18:08:38,939] [worker-rahul] Worker ID: worker-rahul
+[2025-11-09 18:08:38,940] [worker-rahul] Waiting for tasks from Kafka...
+
+[2025-11-09 18:13:58,573] [worker-rahul] 
+Shutdown signal received
+[2025-11-09 18:13:58,574] [worker-rahul] 
+Shutting down worker...
+[2025-11-09 18:13:58,629] [worker-rahul] 
+=== Final Statistics ===
+[2025-11-09 18:13:58,629] [worker-rahul] Tasks consumed: 0
+[2025-11-09 18:13:58,629] [worker-rahul] Tiles processed: 0
+[2025-11-09 18:13:58,629] [worker-rahul] Worker shutdown complete
+
+[2025-11-09 18:15:23,548] [worker-rahul] Worker initialized: worker-rahul
+[2025-11-09 18:15:23,548] [worker-rahul] Starting worker loop...
+[2025-11-09 18:15:23,548] [worker-rahul] Worker ID: worker-rahul
+[2025-11-09 18:15:23,548] [worker-rahul] Waiting for tasks from Kafka...
+
+[2025-11-09 18:16:22,658] [worker-rahul] Processing tile 0...
+[2025-11-09 18:16:23,016] [worker-rahul] ✅ Tile 0 processed and result published
+[2025-11-09 18:16:23,018] [worker-rahul] Processing tile 1...
+[2025-11-09 18:16:23,380] [worker-rahul] ✅ Tile 1 processed and result published
+[2025-11-09 18:16:23,382] [worker-rahul] Processing tile 2...
+[2025-11-09 18:16:24,013] [worker-rahul] ✅ Tile 2 processed and result published
+[2025-11-09 18:16:24,015] [worker-rahul] Processing tile 3...
+[2025-11-09 18:16:24,590] [worker-rahul] ✅ Tile 3 processed and result published
+[2025-11-09 18:19:24,746] [worker-rahul] Processing tile 0...
+[2025-11-09 18:19:24,996] [worker-rahul] ✅ Tile 0 processed and result published
+[2025-11-09 18:19:24,997] [worker-rahul] Processing tile 1...
+[2025-11-09 18:19:25,190] [worker-rahul] ✅ Tile 1 processed and result published
+[2025-11-09 18:19:25,192] [worker-rahul] Processing tile 2...
+[2025-11-09 18:19:25,444] [worker-rahul] ✅ Tile 2 processed and result published
+[2025-11-09 18:19:25,445] [worker-rahul] Processing tile 3...
+[2025-11-09 18:19:25,649] [worker-rahul] ✅ Tile 3 processed and result published
+[2025-11-09 18:20:58,143] [worker-rahul] Processing tile 0...
+[2025-11-09 18:20:58,387] [worker-rahul] ✅ Tile 0 processed and result published
+[2025-11-09 18:20:58,389] [worker-rahul] Processing tile 0...
+[2025-11-09 18:20:58,590] [worker-rahul] ✅ Tile 0 processed and result published
+[2025-11-09 18:21:37,623] [worker-rahul] Processing tile 11...
+[2025-11-09 18:21:37,760] [worker-rahul] ✅ Tile 11 processed and result published
+[2025-11-09 18:23:28,331] [worker-rahul] 
+Shutdown signal received
+[2025-11-09 18:23:28,332] [worker-rahul] 
+Shutting down worker...
+[2025-11-09 18:23:28,999] [worker-rahul] 
+=== Final Statistics ===
+[2025-11-09 18:23:29,000] [worker-rahul] Tasks consumed: 11
+[2025-11-09 18:23:29,000] [worker-rahul] Tiles processed: 11
+[2025-11-09 18:23:29,000] [worker-rahul] Worker shutdown complete
+
+[2025-11-09 18:30:04,336] [worker-rahul] Worker initialized: worker-rahul
+[2025-11-09 18:30:04,337] [worker-rahul] Starting worker loop...
+[2025-11-09 18:30:04,337] [worker-rahul] Worker ID: worker-rahul
+[2025-11-09 18:30:04,337] [worker-rahul] Waiting for tasks from Kafka...
+
+[2025-11-09 18:32:00,918] [worker-rahul] 
+Shutdown signal received
+[2025-11-09 18:32:00,919] [worker-rahul] 
+Shutting down worker...
+[2025-11-09 18:32:01,010] [worker-rahul] 
+=== Final Statistics ===
+[2025-11-09 18:32:01,011] [worker-rahul] Tasks consumed: 0
+[2025-11-09 18:32:01,011] [worker-rahul] Tiles processed: 0
+[2025-11-09 18:32:01,011] [worker-rahul] Worker shutdown complete
+
+[2025-11-09 22:18:37,188] [worker-rahul] Worker initialized: worker-rahul
+[2025-11-09 22:18:37,190] [worker-rahul] Starting worker loop...
+[2025-11-09 22:18:37,190] [worker-rahul] Worker ID: worker-rahul
+[2025-11-09 22:18:37,191] [worker-rahul] Waiting for tasks from Kafka...
+
+[2025-11-09 22:18:39,085] [worker-rahul] Processing tile 11...
+[2025-11-09 22:18:39,357] [worker-rahul] ✅ Tile 11 processed and result published
+[2025-11-09 22:18:50,866] [worker-rahul] 
+Shutdown signal received
+[2025-11-09 22:18:50,867] [worker-rahul] 
+Shutting down worker...
+[2025-11-09 22:18:51,155] [worker-rahul] 
+=== Final Statistics ===
+[2025-11-09 22:18:51,156] [worker-rahul] Tasks consumed: 1
+[2025-11-09 22:18:51,156] [worker-rahul] Tiles processed: 1
+[2025-11-09 22:18:51,156] [worker-rahul] Worker shutdown complete
+
