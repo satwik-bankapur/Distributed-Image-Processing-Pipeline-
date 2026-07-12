@@ -1,500 +1,141 @@
-# 🖼️ Distributed Image Processing Pipeline with Kafka
+# Distributed Image Processing Pipeline
 
-A scalable, fault-tolerant distributed image processing system that uses Apache Kafka for asynchronous communication between master and worker nodes. The system splits images into tiles, processes them in parallel across multiple workers, and reconstructs the final result.
-
-## 📋 Table of Contents
-
-- [Overview](#overview)
-- [System Architecture](#system-architecture)
-- [Features](#features)
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Configuration](#configuration)
-- [Running the System](#running-the-system)
-- [Usage](#usage)
-- [Troubleshooting](#troubleshooting)
-- [Project Structure](#project-structure)
-- [API Documentation](#api-documentation)
-
-## 🎯 Overview
-
-This project implements a distributed image processing pipeline with:
-- **Master Node**: Handles image upload, tile splitting, and reconstruction
-- **Kafka Broker**: Message queue for task distribution and result collection
-- **Worker Nodes**: Process image tiles independently with various transformations
-- **Web Interface**: User-friendly UI for image upload and monitoring
-
-## 🏗️ System Architecture
+A fault-tolerant pipeline that processes large images in parallel across multiple
+worker machines, coordinated through Apache Kafka. The master splits an image into
+tiles, fans them out as independent tasks, and reassembles the processed tiles into
+the final result. Adding a worker adds throughput — no code or config changes to the
+rest of the system.
 
 ```
-┌─────────────┐
-│   Client    │
-│   (Web UI)  │
-└──────┬──────┘
-       │
-       ▼
-┌─────────────────────────────────────┐
-│         Master Node (Node 1)        │
-│  • Image Upload & Splitting         │
-│  • Task Distribution via Kafka      │
-│  • Result Collection & Reconstruction│
-│  • Worker Health Monitoring         │
-└─────────────┬───────────────────────┘
-              │
-              ▼
-     ┌────────────────┐
-     │ Kafka Broker   │
-     │   (Node 2)     │
-     │                │
-     │ Topics:        │
-     │ • tasks        │
-     │ • results      │
-     │ • heartbeats   │
-     └────────┬───────┘
-              │
-       ┏━━━━━━┻━━━━━━┓
-       ▼              ▼
-┌─────────────┐ ┌─────────────┐
-│  Worker 1   │ │  Worker 2   │
-│  (Node 3)   │ │  (Node 4)   │
-│             │ │             │
-│ • Consume   │ │ • Consume   │
-│   Tasks     │ │   Tasks     │
-│ • Process   │ │ • Process   │
-│   Tiles     │ │   Tiles     │
-│ • Publish   │ │ • Publish   │
-│   Results   │ │   Results   │
-│ • Send      │ │ • Send      │
-│   Heartbeats│ │   Heartbeats│
-└─────────────┘ └─────────────┘
+        upload                tasks topic                    results topic
+ client ─────▶  ┌────────┐  (2 partitions)  ┌──────────┐   ┌────────┐
+                │ MASTER │ ───────────────▶  │ Worker 1 │──▶│        │
+                │        │                   ├──────────┤   │ MASTER │──▶ reassembled
+                │ split  │ ───────────────▶  │ Worker 2 │──▶│ collect│    image
+                │ collect│                   └──────────┘   └────────┘
+                └────────┘  ◀── heartbeats topic ── workers announce liveness
 ```
 
-## ✨ Features
+Kafka partitions the `tasks` topic across the workers' shared consumer group, so
+each tile is delivered to exactly one worker and the load spreads automatically.
 
-### Image Processing Transformations
-- **Grayscale**: Convert to black and white
-- **Blur**: Apply Gaussian blur (5x5 kernel)
-- **Edge Detection**: Canny edge detection
-- **Sharpen**: Image sharpening filter
-- **Brightness Increase**: Increase brightness by 20%
+## Why this is interesting
 
-### System Features
-- ✅ Asynchronous task distribution via Kafka
-- ✅ Parallel processing across multiple workers
-- ✅ Automatic load balancing using Kafka consumer groups
-- ✅ Real-time worker health monitoring via heartbeats
-- ✅ Fault-tolerant message delivery
-- ✅ Web-based UI for easy interaction
-- ✅ Job tracking with unique job IDs
-- ✅ Configurable tile sizes (512x512 default)
+Processing a 4K image with a single process is slow and doesn't scale. This project
+treats image processing as a **distributed data-parallel problem**: tiles are
+independent units of work, Kafka is the durable task queue and load balancer, and
+workers are stateless and horizontally scalable. The same shape applies to video
+transcoding, ETL, or any embarrassingly-parallel batch workload.
 
-## 📦 Prerequisites
+## Key design decisions
 
-### Software Requirements
-- **Python**: 3.8 or higher
-- **Apache Kafka**: 2.8 or higher
-- **Apache Zookeeper**: 3.6 or higher (for Kafka)
+| Decision | Why | Trade-off |
+|---|---|---|
+| **Kafka consumer groups for load balancing** | Workers share one group; Kafka assigns partitions, so tiles distribute with zero coordination code. | Parallelism is capped by partition count — scaling past *N* workers means adding partitions. |
+| **Tile-based data parallelism** | 512×512 tiles are independent, so work is embarrassingly parallel and a slow worker never blocks others. | Transforms needing cross-tile context (e.g. large-radius blur) could seam at edges; the included transforms are pixel-local, so seams are negligible. |
+| **Synchronous upload request** | Simple client contract: `POST /upload` returns the finished result. | Holds the connection open for the whole job. The `/status` + `/result` endpoints exist for the async job-polling path when jobs get large. |
+| **At-most-once delivery** | Workers auto-commit offsets; if one crashes mid-tile the master reports `504 Incomplete` instead of hanging forever. | A crashed tile is dropped rather than retried — fail-fast visibility was chosen over exactly-once complexity. |
+| **Dedicated heartbeat topic** | Liveness is decoupled from work; the master tracks workers via a separate `latest`-offset consumer. | Heartbeats are advisory (monitoring), not used for task routing. |
+| **base64-over-JSON tile payloads** | Debuggable and language-agnostic messages. | ~33% size overhead vs. raw bytes — the first thing to change if throughput matters. |
 
-### Python Libraries
-```
-fastapi
-uvicorn
-confluent-kafka==2.3.0
-pillow==10.0.0
-opencv-python==4.8.1.78
-numpy==1.24.3
-```
+## How it works
 
-## 🚀 Installation
+1. Client uploads an image to the master (`POST /upload?transformation=grayscale`).
+2. Master validates size, splits it into 512×512 tiles, and publishes each tile to
+   the `tasks` topic keyed by tile ID.
+3. Workers in the `image-processors` consumer group pull tiles, apply the requested
+   OpenCV transformation, and publish results to the `results` topic.
+4. Master collects results for the job, reconstructs the full image, and returns it.
+5. Throughout, workers emit heartbeats; `GET /api/workers` reports who's alive.
 
-### 1. Install Apache Kafka and Zookeeper
+**Transformations:** grayscale, Gaussian blur, Canny edge detection, sharpen,
+brightness increase.
 
-#### On Ubuntu/Debian:
+## Quickstart
+
+Requires Python 3.8+ and Docker (for the bundled single-node Kafka).
+
 ```bash
-# Install Java (required for Kafka)
-sudo apt update
-sudo apt install openjdk-11-jdk
+# 1. Start Kafka (KRaft mode, no ZooKeeper). Topics auto-create with 2 partitions.
+docker compose up -d
 
-# Download and extract Kafka
-wget https://downloads.apache.org/kafka/3.6.0/kafka_2.13-3.6.0.tgz
-tar -xzf kafka_2.13-3.6.0.tgz
-cd kafka_2.13-3.6.0
-```
-
-#### On macOS:
-```bash
-brew install kafka
-```
-
-### 2. Clone the Project
-```bash
-git clone https://github.com/sanjandeep77/16_Project3_BD.git
-cd distributed-image-pipeline
-```
-
-### 3. Install Python Dependencies
-
-#### For Master Node:
-```bash
-cd image-pipeline-master
+# 2. Master node
+cd master
 pip install -r requirements.txt
-```
+python run.py                      # serves http://localhost:8000
 
-#### For Worker Nodes:
-```bash
-cd image-pipeline-worker
+# 3. Two workers (separate terminals). Same group ⇒ Kafka load-balances tiles.
+cd worker
 pip install -r requirements.txt
+WORKER_ID=worker-1 python run_worker.py
+WORKER_ID=worker-2 python run_worker.py
 ```
 
-## ⚙️ Configuration
+Open <http://localhost:8000>, upload an image (min 1024×1024), and pick a
+transformation. Everything reads its broker address from `KAFKA_BROKER`
+(default `localhost:9092`) — see [`.env.example`](.env.example). To run workers on
+separate machines, point `KAFKA_BROKER` at the broker host's IP.
 
-### 1. Start Kafka and Zookeeper
+## API
+
+| Endpoint | Description |
+|---|---|
+| `POST /upload?transformation=<name>` | Upload an image; returns job ID, tile count, and result path. |
+| `GET /status/{job_id}` | `processing` or `completed`. |
+| `GET /result/{job_id}` | Result path for a finished job (404 if not ready). |
+| `GET /api/workers` | Active workers and their last-heartbeat age. |
+| `GET /health` | Liveness check. |
+
+## Tests
+
+Unit tests cover the pure logic — tiling round-trips and every transformation's
+shape/dtype invariants — without needing a running Kafka:
 
 ```bash
-# Start Zookeeper (Terminal 1)
-bin/zookeeper-server-start.sh config/zookeeper.properties
-
-# Start Kafka Broker (Terminal 2)
-bin/kafka-server-start.sh config/server.properties
+pip install pillow numpy opencv-python-headless pytest
+pytest tests/ -q
 ```
 
-### 2. Create Kafka Topics
+CI runs the suite on every push ([`.github/workflows/tests.yml`](.github/workflows/tests.yml)).
 
-```bash
-# Create tasks topic (2 partitions for 2 workers)
-bin/kafka-topics.sh --create \
-  --bootstrap-server localhost:9092 \
-  --replication-factor 1 \
-  --partitions 2 \
-  --topic tasks
-
-# Create results topic
-bin/kafka-topics.sh --create \
-  --bootstrap-server localhost:9092 \
-  --replication-factor 1 \
-  --partitions 2 \
-  --topic results
-
-# Create heartbeats topic
-bin/kafka-topics.sh --create \
-  --bootstrap-server localhost:9092 \
-  --replication-factor 1 \
-  --partitions 1 \
-  --topic heartbeats
-```
-
-### 3. Configure Network Settings
-
-#### Master Node (`image-pipeline-master/app/config.py`):
-```python
-# Kafka Configuration
-KAFKA_BROKER = "localhost:9092"  # Or IP address if on different machine
-KAFKA_TASKS_TOPIC = "tasks"
-KAFKA_RESULTS_TOPIC = "results"
-KAFKA_HEARTBEATS_TOPIC = "heartbeats"
-
-# Master consumer group (for results)
-MASTER_CONSUMER_GROUP = "master-results-consumer"
-```
-
-#### Worker Nodes (`worker/config.py`):
-```python
-# Worker Configuration
-WORKER_ID = "worker-1"  # Change to "worker-2" for second worker
-
-# Kafka Configuration
-KAFKA_BROKER = "192.168.x.x:9092"  # Master node IP address
-KAFKA_TASKS_TOPIC = "tasks"
-KAFKA_RESULTS_TOPIC = "results"
-KAFKA_HEARTBEATS_TOPIC = "heartbeats"
-
-# IMPORTANT: Both workers must use the same consumer group
-CONSUMER_GROUP = "image-processors"
-```
-
-### 4. Update Master Consumer Group
-
-In `image-pipeline-master/app/services/kafka_consumer.py`:
-```python
-self.consumer = Consumer({
-    'bootstrap.servers': KAFKA_BROKER,
-    'group.id': 'master-results-consumer',  # Different from workers
-    'auto.offset.reset': 'earliest'
-})
-```
-
-## 🏃 Running the System
-
-### 1. Start the Master Node
-```bash
-cd image-pipeline-master
-python run.py
-```
-The master will start on `http://localhost:8000`
-
-### 2. Start Worker 1
-```bash
-cd image-pipeline-worker
-python run_worker.py
-```
-
-### 3. Start Worker 2 (on different machine or terminal)
-```bash
-cd image-pipeline-worker1
-python run_worker.py
-```
-
-### 4. Access the Web Interface
-Open your browser and navigate to:
-```
-http://localhost:8000
-```
-
-## 📖 Usage
-
-### Upload and Process an Image
-
-1. **Open the Web UI** at `http://localhost:8000`
-2. **Select an image** (minimum size: 1024x1024 pixels)
-3. **Choose a transformation** from the dropdown:
-   - Grayscale
-   - Blur
-   - Edge Detection
-   - Sharpen
-4. **Click "Upload & Process"**
-5. **Monitor progress** in the dashboard
-6. **View active workers** in the monitoring panel
-7. **Download the result** once processing is complete
-
-### Using the REST API
-
-#### Upload Image
-```bash
-curl -X POST "http://localhost:8000/upload?transformation=grayscale" \
-  -F "file=@/path/to/image.jpg"
-```
-
-Response:
-```json
-{
-  "status": "success",
-  "job_id": "550e8400-e29b-41d4-a716-446655440000",
-  "tiles_count": 4,
-  "transformation": "grayscale",
-  "result_path": "/static/results/550e8400-e29b-41d4-a716-446655440000_result.png"
-}
-```
-
-#### Check Job Status
-```bash
-curl "http://localhost:8000/status/{job_id}"
-```
-
-#### Get Result
-```bash
-curl "http://localhost:8000/result/{job_id}"
-```
-
-#### Get Active Workers
-```bash
-curl "http://localhost:8000/api/workers"
-```
-
-Response:
-```json
-{
-  "active_workers": 2,
-  "workers": [
-    {
-      "worker_id": "worker-1",
-      "last_heartbeat": "2025-11-09T18:30:45",
-      "age_seconds": 3
-    },
-    {
-      "worker_id": "worker-2",
-      "last_heartbeat": "2025-11-09T18:30:47",
-      "age_seconds": 1
-    }
-  ]
-}
-```
-
-## 🔧 Troubleshooting
-
-### Workers Not Receiving Tasks
-
-**Problem**: Workers are idle, not processing tiles.
-
-**Solution**:
-1. **Check consumer groups** - Both workers must use the same group:
-   ```python
-   CONSUMER_GROUP = "image-processors"
-   ```
-
-2. **Verify Kafka broker IP** in worker config:
-   ```python
-   KAFKA_BROKER = "192.168.x.x:9092"  # Use correct IP
-   ```
-
-3. **Check Kafka topics exist**:
-   ```bash
-   bin/kafka-topics.sh --list --bootstrap-server localhost:9092
-   ```
-
-4. **Reset consumer group offsets**:
-   ```bash
-   bin/kafka-consumer-groups.sh --bootstrap-server localhost:9092 \
-     --group image-processors --reset-offsets --to-earliest \
-     --topic tasks --execute
-   ```
-
-### Connection Refused Error
-
-**Problem**: `Connection refused` to Kafka broker.
-
-**Solution**:
-1. Ensure Kafka is running:
-   ```bash
-   netstat -tulpn | grep 9092
-   ```
-
-2. Check firewall settings:
-   ```bash
-   sudo ufw allow 9092/tcp
-   ```
-
-3. Update Kafka's `server.properties`:
-   ```properties
-   listeners=PLAINTEXT://0.0.0.0:9092
-   advertised.listeners=PLAINTEXT://192.168.x.x:9092
-   ```
-
-### Image Size Error
-
-**Problem**: `Image must be at least 1024x1024`.
-
-**Solution**: Ensure uploaded images meet minimum size requirements or adjust in `config.py`:
-```python
-MIN_IMAGE_SIZE = 512  # Lower if needed
-```
-
-### Worker Heartbeats Not Showing
-
-**Problem**: No workers appear in the monitoring dashboard.
-
-**Solution**:
-1. Check heartbeat topic exists
-2. Verify heartbeat interval in worker config
-3. Check master heartbeat monitor is running
-4. Review worker logs for errors
-
-### Incomplete Processing
-
-**Problem**: Not all tiles are processed.
-
-**Solution**:
-1. Check worker logs for errors
-2. Increase timeout in `kafka_consumer.py`:
-   ```python
-   timeout_sec=600  # Increase timeout
-   ```
-3. Verify all workers are running
-4. Check Kafka partition assignment
-
-## 📁 Project Structure
+## Project structure
 
 ```
-distributed-image-pipeline/
-├── image-pipeline-master/
+.
+├── docker-compose.yml          # single-node Kafka (KRaft)
+├── master/
 │   ├── app/
-│   │   ├── config.py                 # Master configuration
-│   │   ├── main.py                   # FastAPI application
-│   │   ├── routes/
-│   │   │   └── upload.py             # Upload endpoints
-│   │   ├── services/
-│   │   │   ├── image_processor.py    # Image splitting/reconstruction
-│   │   │   ├── kafka_producer.py     # Publish tasks
-│   │   │   ├── kafka_consumer.py     # Consume results
-│   │   │   └── heartbeat_monitor.py  # Monitor workers
-│   │   └── static/
-│   │       ├── index.html            # Web UI
-│   │       ├── uploads/              # Uploaded images
-│   │       └── results/              # Processed images
+│   │   ├── main.py             # FastAPI app + lifespan
+│   │   ├── config.py           # env-driven config
+│   │   ├── routes/upload.py    # upload → split → publish → collect → reconstruct
+│   │   ├── services/           # image_processor, kafka_producer/consumer, heartbeat_monitor
+│   │   └── static/index.html   # web UI
 │   ├── requirements.txt
-│   └── run.py                        # Start master
-│
-├── image-pipeline-worker/
+│   └── run.py
+├── worker/
 │   ├── worker/
-│   │   ├── config.py                 # Worker configuration
-│   │   ├── worker_main.py            # Main worker logic
-│   │   ├── services/
-│   │   │   ├── kafka_consumer.py     # Consume tasks
-│   │   │   ├── kafka_producer.py     # Publish results
-│   │   │   ├── image_processor.py    # Process tiles
-│   │   │   └── heartbeat_sender.py   # Send heartbeats
-│   │   └── logs/
-│   │       └── worker-1.log          # Worker logs
+│   │   ├── worker_main.py      # consume → process → publish loop
+│   │   ├── config.py           # WORKER_ID / broker from env
+│   │   └── services/           # image_processor, kafka_consumer/producer, heartbeat_sender
 │   ├── requirements.txt
-│   └── run_worker.py                 # Start worker
-│
-└── image-pipeline-worker1/           # Second worker (same structure)
-    └── ...
+│   └── run_worker.py
+└── tests/                      # pytest unit tests
 ```
 
-## 📚 API Documentation
+A single worker codebase runs every worker instance; identity comes from the
+`WORKER_ID` environment variable rather than duplicated directories.
 
-### Endpoints
+## Possible extensions
 
-#### `POST /upload`
-Upload and process an image.
+- Async job model (`202 Accepted` + polling) for very large images.
+- Exactly-once processing via manual offset commits after result publish.
+- Prometheus metrics on tiles/sec and per-worker throughput.
+- Container the master and workers for a fully `docker compose`-able stack.
 
-**Parameters**:
-- `file`: Image file (multipart/form-data)
-- `transformation`: Processing type (query parameter)
+## Team
 
-**Returns**: Job information with job_id
-
----
-
-#### `GET /status/{job_id}`
-Get processing status for a job.
-
-**Returns**: 
-```json
-{
-  "status": "completed" | "processing",
-  "job_id": "string"
-}
-```
-
----
-
-#### `GET /result/{job_id}`
-Get processed image result.
-
-**Returns**: Result path and job information
-
----
-
-#### `GET /api/workers`
-Get list of active workers.
-
-**Returns**: Worker count and details
-
----
-
-#### `GET /health`
-Health check endpoint.
-
-**Returns**: Service status
-
-## 🤝 Contributors
-
-- **Master Node**: R Sanjandeep
-- **Broker**: Sahil
-- **Worker 1**: Satwik
-- **Worker 2**: Rahul
-
----
-
-**Note**: Remember to start services in order: Zookeeper → Kafka → Master → Workers
+Originally built as a university distributed-systems project by a team of four
+(master node, Kafka broker, and two worker nodes). This repository is a refactor
+focused on the worker/pipeline architecture — consolidating the duplicated worker
+code into one config-driven service, fixing the consumer-group setup so load
+balancing works as designed, externalizing configuration, and adding tests and CI.

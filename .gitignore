@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Runtime artifacts
+worker/worker/logs/*.log
+master/app/static/uploads/*
+master/app/static/results/*
+!master/app/static/uploads/.gitkeep
+!master/app/static/results/.gitkeep
+
+# Local config
+.env
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
